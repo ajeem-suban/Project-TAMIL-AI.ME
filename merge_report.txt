@@ -1,0 +1,27 @@
+Existing corpus: 2130 entries
+✅ acharakovai                101 entries added
+✅ iniyavainarpadhu            41 entries added
+✅ innanarpadhu                41 entries added
+✅ kalithogai                 150 entries added
+✅ kurunthogai                402 entries added
+✅ madurai_kanji               95 entries added
+✅ malaipadukadam              79 entries added
+✅ mudhumozhikanchi           100 entries added
+✅ naaladiyar                 402 entries added
+✅ naanmanikadikai            107 entries added
+✅ narrinai                   401 entries added
+✅ nedunalvaadai               32 entries added
+✅ paripadal                  152 entries added
+✅ pathirruppattu              91 entries added
+✅ kurinjippattu               40 entries added
+✅ pattinapalai                42 entries added
+✅ mullaipattu                 21 entries added
+✅ perumpanatrupadai           60 entries added
+✅ thirikadugam               107 entries added
+
+==================================================
+Existing entries  : 2130
+New entries added : 2464
+Total in output   : 4594
+Output file       : data\corpus_merged.json
+==================================================
