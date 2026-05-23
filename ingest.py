@@ -1,7 +1,6 @@
 import json
 import chromadb
 from sentence_transformers import SentenceTransformer
-import time
 
 # Load corpus
 print("Loading corpus...")
@@ -14,7 +13,7 @@ data = [item for item in data if item.get("original_tamil", "").strip()]
 print("Valid entries after filtering: " + str(len(data)))
 
 # Load Tamil embedding model
-print("Loading embedding model (first time downloads ~90MB)...")
+print("Loading embedding model...")
 model = SentenceTransformer("sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
 
 # ChromaDB setup
@@ -42,11 +41,16 @@ for i in range(0, total, BATCH_SIZE):
     documents = [item["original_tamil"] for item in batch]
     metadatas = [
         {
-            "source":      item.get("source", ""),
-            "number":      str(item.get("number", "")),
-            "translation": item.get("translation_en", ""),
-            "poet":        item.get("poet", ""),
-            "period":      item.get("period", "sangam")
+            "source":          item.get("source", ""),
+            "number":          str(item.get("number", "")),
+            "translation":     item.get("translation_en", ""),
+            "translation_ta":  item.get("translation_ta", ""),
+            "explanation":     item.get("explanation", ""),
+            "transliteration": item.get("transliteration", ""),
+            "couplet":         item.get("couplet", ""),
+            "poet":            item.get("poet", ""),
+            "period":          item.get("period", "sangam"),
+            "topic":           item.get("topic", ""),
         }
         for item in batch
     ]

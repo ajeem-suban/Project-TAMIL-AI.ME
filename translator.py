@@ -1,32 +1,60 @@
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+import os
+os.environ["HF_HUB_DISABLE_XET"] = "1"
+
 import torch
-from aksharamukha import transliterate
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from IndicTransToolkit import IndicProcessor
 
 MODEL_NAME = "ai4bharat/indictrans2-en-indic-dist-200M"
 
-print("Loading tokenizer...")
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, trust_remote_code=True)
+print("[Translator] Loading tokenizer...")
+tokenizer = AutoTokenizer.from_pretrained(
+    MODEL_NAME,
+    trust_remote_code=True
+)
 
-print("Loading model...")
+print("[Translator] Loading model...")
 model = AutoModelForSeq2SeqLM.from_pretrained(
     MODEL_NAME,
-    trust_remote_code=True,
-    torch_dtype=torch.float16,
-    device_map="auto"
+    trust_remote_code=True
 )
-print("Model loaded successfully!")
 
-def translate_english_to_tamil(text):
-    input_text = f"eng_Latn tam_Taml {text}"
-    inputs = tokenizer(input_text, return_tensors="pt").to("cuda")
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model.to(device)
+model.eval()
+
+print(f"[Translator] Ready on device: {device}")
+
+ip = IndicProcessor(inference=True)
+
+
+def translate_en_to_ta(text: str) -> str:
+    batch = ip.preprocess_batch(
+        [text],
+        src_lang="eng_Latn",
+        tgt_lang="tam_Taml"
+    )
+
+    inputs = tokenizer(
+        batch,
+        return_tensors="pt",
+        padding=True,
+        truncation=True
+    )
+
+    inputs = {k: v.to(device) for k, v in inputs.items()}
+
     with torch.no_grad():
-        outputs = model.generate(**inputs, max_length=256, num_beams=5)
-    raw_output = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    # Convert Devanagari script → Tamil script
-    tamil_output = transliterate.process("Devanagari", "Tamil", raw_output)
-    return tamil_output
+        generated_tokens = model.generate(
+            **inputs,
+            max_length=256,
+            num_beams=5
+        )
 
-if __name__ == "__main__":
-    text = "India is building powerful AI systems."
-    print("English:", text)
-    print("Tamil:", translate_english_to_tamil(text))
+    outputs = tokenizer.batch_decode(
+        generated_tokens,
+        skip_special_tokens=True
+    )
+
+    outputs = ip.postprocess_batch(outputs, lang="tam_Taml")
+    return outputs[0]

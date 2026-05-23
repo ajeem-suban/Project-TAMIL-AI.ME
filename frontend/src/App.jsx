@@ -29,6 +29,72 @@ const SOURCES = [
   { value: "thirikadugam",      label: "Thirikadugam" },
 ]
 
+function VerseCard({ r, isRandom = false }) {
+  const [expanded, setExpanded] = useState(false)
+
+  return (
+    <div style={isRandom ? styles.randomCard : styles.card}>
+      {/* Header */}
+      <div style={styles.cardHeader}>
+        <span style={styles.badge}>{r.source} #{r.number}</span>
+        {r.period && <span style={styles.periodBadge}>{r.period}</span>}
+        {r.poet && <span style={styles.poet}>— {r.poet}</span>}
+      </div>
+
+      {/* Tamil verse */}
+      <p style={styles.tamil}>{r.tamil}</p>
+
+      {/* Transliteration */}
+      {r.transliteration && (
+        <p style={styles.transliteration}>{r.transliteration}</p>
+      )}
+
+      {/* Topic */}
+      {r.topic && (
+        <p style={styles.topic}>📌 {r.topic}</p>
+      )}
+
+      {/* English translation */}
+      {r.translation && (
+        <p style={styles.translation}>🇬🇧 {r.translation}</p>
+      )}
+
+      {/* Couplet */}
+      {r.couplet && (
+        <p style={styles.couplet}>✒️ {r.couplet}</p>
+      )}
+
+      {/* Show More button */}
+      {(r.translation_ta || r.explanation) && (
+        <button
+          style={styles.expandBtn}
+          onClick={() => setExpanded(!expanded)}
+        >
+          {expanded ? "▲ Show Less" : "▼ Show More"}
+        </button>
+      )}
+
+      {/* Expanded content */}
+      {expanded && (
+        <div style={styles.expandedSection}>
+          {r.translation_ta && (
+            <div style={styles.expandedBlock}>
+              <span style={styles.expandedLabel}>தமிழ் விளக்கம்</span>
+              <p style={styles.expandedText}>{r.translation_ta}</p>
+            </div>
+          )}
+          {r.explanation && (
+            <div style={styles.expandedBlock}>
+              <span style={styles.expandedLabel}>Explanation</span>
+              <p style={styles.expandedText}>{r.explanation}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function App() {
   const [query, setQuery] = useState("")
   const [results, setResults] = useState([])
@@ -44,6 +110,7 @@ export default function App() {
         params: { query, source, n: 5 }
       })
       setResults(res.data.results)
+      setRandom(null)
     } catch {
       alert("API not reachable. Is backend running?")
     }
@@ -55,6 +122,7 @@ export default function App() {
     try {
       const res = await axios.get(`${API}/random`)
       setRandom(res.data)
+      setResults([])
     } catch {
       alert("API not reachable. Is backend running?")
     }
@@ -63,9 +131,9 @@ export default function App() {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>🏛️ Tamil AI — Classical Corpus Search</h1>
+      <h1 style={styles.title}>🏛️ Tamil AI</h1>
       <p style={styles.subtitle}>
-        Search across 4,592 verses · Thirukkural · Sangam · Post-Sangam
+        4,592 verses · Thirukkural · Sangam · Post-Sangam Classical Tamil
       </p>
 
       {/* Search Bar */}
@@ -96,31 +164,20 @@ export default function App() {
 
       {/* Random Verse */}
       {random && (
-        <div style={styles.randomCard}>
-          <span style={styles.badge}>{random.source} #{random.number}</span>
-          <p style={styles.tamil}>{random.tamil}</p>
-          {random.translation && (
-            <p style={styles.translation}>"{random.translation}"</p>
-          )}
-          {random.poet && <p style={styles.poet}>— {random.poet}</p>}
-        </div>
+        <>
+          <h3 style={styles.resultsTitle}>🎲 Random Verse</h3>
+          <VerseCard r={random} isRandom={true} />
+        </>
       )}
 
       {/* Search Results */}
       {results.length > 0 && (
-        <div>
+        <>
           <h3 style={styles.resultsTitle}>Results for "{query}"</h3>
           {results.map((r, i) => (
-            <div key={i} style={styles.card}>
-              <span style={styles.badge}>{r.source} #{r.number}</span>
-              <p style={styles.tamil}>{r.tamil}</p>
-              {r.translation && (
-                <p style={styles.translation}>"{r.translation}"</p>
-              )}
-              {r.poet && <p style={styles.poet}>— {r.poet}</p>}
-            </div>
+            <VerseCard key={i} r={r} />
           ))}
-        </div>
+        </>
       )}
     </div>
   )
@@ -205,7 +262,13 @@ const styles = {
     borderRadius: "12px",
     padding: "1.5rem",
     marginBottom: "1.5rem",
-    textAlign: "center"
+  },
+  cardHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    flexWrap: "wrap",
+    marginBottom: "0.75rem"
   },
   badge: {
     backgroundColor: "#d4af37",
@@ -216,22 +279,78 @@ const styles = {
     fontWeight: "bold",
     textTransform: "uppercase"
   },
+  periodBadge: {
+    backgroundColor: "#2a2a2a",
+    color: "#888",
+    padding: "2px 8px",
+    borderRadius: "20px",
+    fontSize: "0.7rem",
+    border: "1px solid #444"
+  },
   tamil: {
     fontSize: "1.15rem",
     lineHeight: "1.8",
-    margin: "0.75rem 0",
+    margin: "0.5rem 0",
     color: "#f0e6d3"
+  },
+  transliteration: {
+    color: "#888",
+    fontSize: "0.85rem",
+    fontStyle: "italic",
+    margin: "0.25rem 0"
+  },
+  topic: {
+    color: "#b8860b",
+    fontSize: "0.85rem",
+    margin: "0.25rem 0"
   },
   translation: {
     color: "#aaa",
-    fontStyle: "italic",
     fontSize: "0.95rem",
     margin: "0.5rem 0"
   },
+  couplet: {
+    color: "#c8a96e",
+    fontStyle: "italic",
+    fontSize: "0.9rem",
+    margin: "0.5rem 0",
+    borderLeft: "2px solid #d4af37",
+    paddingLeft: "0.75rem"
+  },
   poet: {
     color: "#d4af37",
-    fontSize: "0.85rem",
-    margin: "0.25rem 0"
+    fontSize: "0.85rem"
+  },
+  expandBtn: {
+    background: "transparent",
+    border: "1px solid #444",
+    color: "#888",
+    padding: "4px 12px",
+    borderRadius: "20px",
+    fontSize: "0.8rem",
+    cursor: "pointer",
+    marginTop: "0.5rem"
+  },
+  expandedSection: {
+    marginTop: "0.75rem",
+    borderTop: "1px solid #333",
+    paddingTop: "0.75rem"
+  },
+  expandedBlock: {
+    marginBottom: "0.75rem"
+  },
+  expandedLabel: {
+    color: "#d4af37",
+    fontSize: "0.75rem",
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em"
+  },
+  expandedText: {
+    color: "#c8b89a",
+    fontSize: "0.95rem",
+    lineHeight: "1.7",
+    margin: "0.25rem 0 0 0"
   },
   resultsTitle: {
     color: "#d4af37",

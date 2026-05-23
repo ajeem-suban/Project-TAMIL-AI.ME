@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environments
+venv/
+.env
+
+# Models and large files
+IndicTrans2/
+IndicTransToolkit/
+IndicTransTokenizer/
+*.safetensors
+*.bin
+*.pt
+
+# Database
+chroma_db/
+
+# Temp files
+structure.txt
+*.txt
+translation_test_output.txt
+
+# OS
+.DS_Store
+Thumbs.db
