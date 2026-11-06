@@ -4,7 +4,7 @@ os.environ["HF_HUB_DISABLE_XET"] = "1"
 
 import torch
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
-from IndicTransToolkit import IndicProcessor
+from IndicTransToolkit.processor import IndicProcessor
 
 class AI4BharatService:
 
