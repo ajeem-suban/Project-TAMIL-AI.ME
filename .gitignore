@@ -1,29 +1,45 @@
 # Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
 
-# Environments
-venv/
+# Environments and secrets
 .env
+.env.*
+!.env.example
+venv/
+.venv/
+*.key
 
-# Models and large files
-IndicTrans2/
-IndicTransToolkit/
-IndicTransTokenizer/
+# Vector database (rebuilt with ingest.py)
+chroma_db/
+chroma/
+*.sqlite3
+
+# Model files and caches (downloaded from Hugging Face)
+models/
+.cache/
+huggingface/
 *.safetensors
 *.bin
 *.pt
+*.onnx
 
-# Database
-chroma_db/
+# Node / frontend
+node_modules/
+dist/
+.vite/
+*.log
 
-# Temp files
-structure.txt
-*.txt
-translation_test_output.txt
+# Archives
+*.zip
 
-# OS
+# Editor, OS and AI tool folders
+.vscode/
+.idea/
 .DS_Store
 Thumbs.db
+.claude/
+graphify-out/
