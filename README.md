@@ -1,6 +1,4 @@
-<div align="center">
-  <img src="assets/tamil-ai-banner.png" width="100%" alt="TAMIL-AI.ME - Your All-in-One Tamil AI Platform" />
-</div>
+![TAMIL-AI.ME Banner](assets/tamil-ai-banner.png)
 
 # 📜 TAMIL-AI.ME
 
